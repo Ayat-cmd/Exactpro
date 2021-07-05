@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.opencsv.exceptions.CsvException;
+
 public class Main {
     public static void main(String[] args){
 
@@ -16,14 +17,14 @@ public class Main {
         try {
             collectedData = openCSV.read(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Ошибка! (IOException)");
         } catch (CsvException e) {
-            e.printStackTrace();
+            System.err.println("Ошибка! (CsvException)");
         }
 
-        for(String[] s : collectedData){
-            for(String fs : s){
-                System.out.print(fs+" ");
+        for(String[] arrStr : collectedData){
+            for(String str : arrStr){
+                System.out.print(str+" ");
             }
             System.out.println("");
         }

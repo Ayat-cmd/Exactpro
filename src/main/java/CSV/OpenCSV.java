@@ -1,9 +1,9 @@
 package CSV;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriterBuilder;
-import com.opencsv.ICSVWriter;
+import com.opencsv.*;
 import com.opencsv.exceptions.CsvException;
+import static com.opencsv.ICSVWriter.DEFAULT_QUOTE_CHARACTER;
+import static com.opencsv.ICSVWriter.DEFAULT_SEPARATOR;
 
 import java.io.File;
 import java.io.FileReader;
@@ -12,19 +12,16 @@ import java.io.IOException;
 import java.util.List;
 
 public class OpenCSV {
-    private static final char COMMA = ',';
-    private static final char DOUBLE_QUOTES = '"';
-    private static final char NO_QUOTE_CHARACTER = '\u0000';
 
     private char separator;
     private char quote;
 
     public OpenCSV() {
-        this(COMMA);
+        this(DEFAULT_SEPARATOR);
     }
 
     public OpenCSV(char separator) {
-        this(separator, DOUBLE_QUOTES);
+        this(separator, DEFAULT_QUOTE_CHARACTER);
     }
 
     public OpenCSV(char separator, char quote) {
@@ -43,7 +40,8 @@ public class OpenCSV {
     }
 
     public List<String[]> read(File file) throws IOException, CsvException {
-        try (CSVReader csvReader = new CSVReader(new FileReader(file))) {
+        CSVParser csvParser = new CSVParserBuilder().withSeparator(separator).withQuoteChar(quote).build();
+        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader(file)).withSkipLines(1).withCSVParser(csvParser).build()){
             return csvReader.readAll();
         }
     }
