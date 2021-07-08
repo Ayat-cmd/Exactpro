@@ -1,32 +1,36 @@
 package CSV;
 
+import com.opencsv.exceptions.CsvException;
+import io.netty.handler.logging.LoggingHandler;
+import org.slf4j.Logger;
+
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
-import com.opencsv.exceptions.CsvException;
-
 public class Main {
-    public static void main(String[] args){
-
-        File file = new File("src/main/resources/ex.csv");
-
+    public static void main(String[] args) {
+        Logger logger = org.slf4j.LoggerFactory.getLogger(LoggingHandler.class);
         OpenCSV openCSV = new OpenCSV();
-
-        List<String[]> collectedData = null;
+        List<String[]> loadDataTransactionsToDB;
+        List<String[]> loadDataPricesToDB;
+        ArgumentsReader argumentsReader = new ArgumentsReader();
+        File transactionFile = argumentsReader.getInputDataTransaction();
+        File priceFile = argumentsReader.getInputDataPrice();
         try {
-            collectedData = openCSV.read(file);
+            openCSV.read(transactionFile, priceFile);
+            loadDataTransactionsToDB = openCSV.getTransactions();
+            loadDataPricesToDB = openCSV.getPrices();
+            LoadFileToDB loadFileToDB = new LoadFileToDB(loadDataTransactionsToDB, loadDataPricesToDB);
+            loadFileToDB.checkingDb();
+            loadFileToDB.csvToDB();
         } catch (IOException e) {
-            System.err.println("Ошибка! (IOException)");
+            logger.error("An error occurred while reading file! IOException", e);
         } catch (CsvException e) {
-            System.err.println("Ошибка! (CsvException)");
-        }
-
-        for(String[] arrStr : collectedData){
-            for(String str : arrStr){
-                System.out.print(str+" ");
-            }
-            System.out.println("");
+            logger.error("An error occurred while reading file! CsvException", e);
+        } catch (ParseException e) {
+            logger.error("An error occurred while reading file! CsvException", e);
         }
     }
 }
