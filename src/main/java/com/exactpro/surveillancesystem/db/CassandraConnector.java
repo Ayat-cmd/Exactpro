@@ -28,15 +28,6 @@ public class CassandraConnector {
 
 	}
 
-//	public LocalDate convertDateFormatPrices(String dateConvert) throws ParseException {
-//		String OLD_FORMAT = "dd-MM-yyyy";
-//		SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
-//		Date d = sdf.parse(dateConvert);
-//		Timestamp timestamp = new java.sql.Timestamp(d.getTime());
-//		//System.out.println(timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-//		return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//	}
-
 	public void saveInstrument(Instrument instrument) throws ParseException {
 
 		CqlSession session = new CqlSessionBuilder().addContactPoint(new InetSocketAddress("localhost", 9042))
