@@ -20,8 +20,16 @@ public class ArgumentsReader {
 			throw new IllegalArgumentException();
 	}
 
-	public File getInputData(int i) {
-		File file = Paths.get(args[i]).toFile();
+	public File getTransactionsData() {
+		File file = Paths.get(args[0]).toFile();
+		if (!file.exists())
+			throw new IllegalStateException();
+
+		return file;
+	}
+
+	public File getPriceData() {
+		File file = Paths.get(args[1]).toFile();
 		if (!file.exists())
 			throw new IllegalStateException();
 

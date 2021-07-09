@@ -4,25 +4,21 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
-import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.exactpro.surveillancesystem.entities.Instrument;
 import com.exactpro.surveillancesystem.entities.Transaction;
+import com.exactpro.surveillancesystem.utils.ConvertDateTimeUtils;
 import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import static com.exactpro.surveillancesystem.utils.ConvertDateTimeUtils.*;
 import java.net.InetSocketAddress;
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.function.Function;
-import static java.lang.Double.parseDouble;
 
 public class CassandraConnector {
 	private final InetSocketAddress address;
+	private ConvertDateTimeUtils convert = new ConvertDateTimeUtils();
+	private final Logger loggerCassandraConnection = LoggerFactory.getLogger(LoggingHandler.class);
 
 	public CassandraConnector(String host, Integer port) {
 		this.address = new InetSocketAddress(host, port);
@@ -32,29 +28,17 @@ public class CassandraConnector {
 
 	}
 
-	public double toDouble(String str){
-		double d;
-		d = parseDouble(str);
-		return d;
-	}
-
-	public Instant convertDateFormatTransactions(String oldDateString) throws ParseException {
-		final String OLD_FORMAT = "dd-MM-yyyy hh:mm:ss";
-		SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
-		Date d = sdf.parse(oldDateString);
-		Timestamp timestamp = new java.sql.Timestamp(d.getTime());
-		return timestamp.toInstant();
-	}
-
-	public LocalDate convertDateFormatPrices(String dateConvert) throws ParseException {
-		final String OLD_FORMAT = "dd-MM-yyyy";
-		SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
-		Date d = sdf.parse(dateConvert);
-		Timestamp timestamp = new java.sql.Timestamp(d.getTime());
-		return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-	}
+//	public LocalDate convertDateFormatPrices(String dateConvert) throws ParseException {
+//		String OLD_FORMAT = "dd-MM-yyyy";
+//		SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
+//		Date d = sdf.parse(dateConvert);
+//		Timestamp timestamp = new java.sql.Timestamp(d.getTime());
+//		//System.out.println(timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+//		return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//	}
 
 	public void saveInstrument(Instrument instrument) throws ParseException {
+
 		CqlSession session = new CqlSessionBuilder().addContactPoint(new InetSocketAddress("localhost", 9042))
 				.withLocalDatacenter("datacenter1")
 				.build();
@@ -79,7 +63,7 @@ public class CassandraConnector {
 					"date, currency, avg_price,net_amount_per_day) VALUES (?,?,?,?,?);");
 
 			BoundStatement boundStatement = preparedStatement.bind(PricesToDB[0],
-					convertDateFormatPrices(PricesToDB[1]),
+					convert.convertDateFormatPrices(PricesToDB[1]),
 					PricesToDB[2],
 					toDouble(PricesToDB[3]),
 					toDouble(PricesToDB[4]));
@@ -88,17 +72,7 @@ public class CassandraConnector {
 		session.close();
 	}
 
-	private ResultSet sessionWrapper(Function<CqlSession, ResultSet> action) {
-		try (CqlSession session = new CqlSessionBuilder()
-				.addContactPoint(address)
-				.withLocalDatacenter("datacenter1")
-				.build()) {
-			return action.apply(session);
-		}
-	}
-
 	public void checkingDb() {
-		Logger logger = org.slf4j.LoggerFactory.getLogger(LoggingHandler.class);
 		try{
 			CqlSession session = new CqlSessionBuilder().addContactPoint(new InetSocketAddress("localhost", 9042))
 					.withLocalDatacenter("datacenter1")
@@ -123,7 +97,7 @@ public class CassandraConnector {
 					"net_amount_per_day double);");
 			session.close();
 		}catch (Exception e){
-			logger.error ("An error occurred when creating the database", e);
+			loggerCassandraConnection.error ("An error occurred when creating the database", e);
 		}
 	}
 }

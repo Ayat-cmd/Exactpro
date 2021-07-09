@@ -6,6 +6,7 @@ import com.exactpro.surveillancesystem.entities.Instrument;
 import com.opencsv.exceptions.CsvException;
 import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,10 +15,10 @@ import java.util.List;
 
 public class Main {
 	public static void main(String[] args) throws IOException, CsvException {
-		Logger logger = org.slf4j.LoggerFactory.getLogger(LoggingHandler.class);
+		Logger logger = getLogger(LoggingHandler.class);
 		ArgumentsReader argumentsReader = new ArgumentsReader(args);
-		File transactionFile = argumentsReader.getInputData(0);
-		File priceFile = argumentsReader.getInputData(1);
+		File transactionFile = argumentsReader.getTransactionsData();
+		File priceFile = argumentsReader.getPriceData();
 		CSVManager csvManager = new CSVManager();
 
 		// TODO: convert raw data to entities
@@ -32,7 +33,7 @@ public class Main {
 		try {
 			connector.saveInstrument(instrument);
 		} catch (ParseException e) {
-			logger.error("ошибка конвертации даты");
+			logger.error("date conversion error");
 		}
 	}
 }
