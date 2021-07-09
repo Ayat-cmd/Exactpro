@@ -18,12 +18,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
 import java.util.function.Function;
-
 import static java.lang.Double.parseDouble;
-import static java.lang.Integer.*;
-import static java.lang.Long.*;
 
 public class CassandraConnector {
 	private final InetSocketAddress address;

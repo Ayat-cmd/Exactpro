@@ -4,6 +4,8 @@ import com.exactpro.surveillancesystem.csv.CSVManager;
 import com.exactpro.surveillancesystem.db.CassandraConnector;
 import com.exactpro.surveillancesystem.entities.Instrument;
 import com.opencsv.exceptions.CsvException;
+import io.netty.handler.logging.LoggingHandler;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,11 +14,10 @@ import java.util.List;
 
 public class Main {
 	public static void main(String[] args) throws IOException, CsvException {
+		Logger logger = org.slf4j.LoggerFactory.getLogger(LoggingHandler.class);
 		ArgumentsReader argumentsReader = new ArgumentsReader(args);
 		File transactionFile = argumentsReader.getInputData(0);
 		File priceFile = argumentsReader.getInputData(1);
-//		File transactionFile = new File("src/main/resources/transactions_current_datetime.csv");
-//		File priceFile = new File("src/main/resources/price_file_datestamp.csv");
 		CSVManager csvManager = new CSVManager();
 
 		// TODO: convert raw data to entities
@@ -31,7 +32,7 @@ public class Main {
 		try {
 			connector.saveInstrument(instrument);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("ошибка конвертации даты");
 		}
 	}
 }
