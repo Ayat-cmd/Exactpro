@@ -1,8 +1,16 @@
 CSV/OpenCSV.java
  CSV.OpenCSV
-CSV/LoadFileToDB.java
- CSV.LoadFileToDB
-CSV/ArgumentsReader.java
- CSV.ArgumentsReader
+com/exactpro/surveillancesystem/ArgumentsReader.java
+ com.exactpro.surveillancesystem.ArgumentsReader
+com/exactpro/surveillancesystem/entities/Instrument.java
+ com.exactpro.surveillancesystem.entities.Instrument
+com/exactpro/surveillancesystem/entities/Transaction.java
+ com.exactpro.surveillancesystem.entities.Transaction
 CSV/Main.java
  CSV.Main
+com/exactpro/surveillancesystem/Main.java
+ com.exactpro.surveillancesystem.Main
+com/exactpro/surveillancesystem/csv/CSVManager.java
+ com.exactpro.surveillancesystem.csv.CSVManager
+com/exactpro/surveillancesystem/db/CassandraConnector.java
+ com.exactpro.surveillancesystem.db.CassandraConnector
