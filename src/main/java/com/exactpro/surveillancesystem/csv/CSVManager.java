@@ -1,5 +1,6 @@
 package com.exactpro.surveillancesystem.csv;
 
+import com.exactpro.surveillancesystem.factories.EntityFactory;
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvException;
 
@@ -7,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 public class CSVManager {
@@ -28,14 +30,13 @@ public class CSVManager {
 		try (ICSVWriter writer = new CSVWriterBuilder(new FileWriter(file))
 				.withSeparator(separator)
 				.withQuoteChar(quote)
-				.build()
-		) {
+				.build()) {
 			writer.writeAll(data);
 		}
 	}
 
-	public List<String[]> read(File file) throws IOException, CsvException {
-		return read(file, 1);
+	public <T> List<T> read(File file, EntityFactory<T> entityFactory) throws IOException, CsvException, ParseException {
+		return entityFactory.createEntities(read(file, 1));
 	}
 
 	public List<String[]> read(File file, int skipLines) throws IOException, CsvException {
@@ -46,8 +47,7 @@ public class CSVManager {
 		try (CSVReader csvReader = new CSVReaderBuilder(new FileReader(file))
 				.withSkipLines(skipLines)
 				.withCSVParser(csvParser)
-				.build();
-		) {
+				.build();) {
 			return csvReader.readAll();
 		}
 	}

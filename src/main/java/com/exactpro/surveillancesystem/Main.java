@@ -2,9 +2,11 @@ package com.exactpro.surveillancesystem;
 
 import com.exactpro.surveillancesystem.csv.CSVManager;
 import com.exactpro.surveillancesystem.db.CassandraConnector;
-import com.exactpro.surveillancesystem.entities.Instrument;
+import com.exactpro.surveillancesystem.entities.Prices;
+import com.exactpro.surveillancesystem.entities.Transaction;
+import com.exactpro.surveillancesystem.factories.PricesFactory;
+import com.exactpro.surveillancesystem.factories.TransactionFactory;
 import com.opencsv.exceptions.CsvException;
-import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -14,26 +16,22 @@ import java.text.ParseException;
 import java.util.List;
 
 public class Main {
-	public static void main(String[] args) throws IOException, CsvException {
-		Logger logger = getLogger(LoggingHandler.class);
+	private static Logger logger = getLogger(Main.class);
+
+	public static void main(String[] args) throws IOException, CsvException, ParseException {
 		ArgumentsReader argumentsReader = new ArgumentsReader(args);
+		CSVManager csvManager = new CSVManager();
+		TransactionFactory transactionFactory = new TransactionFactory();
+		PricesFactory pricesFactory = new PricesFactory();
+
 		File transactionFile = argumentsReader.getTransactionsData();
 		File priceFile = argumentsReader.getPriceData();
-		CSVManager csvManager = new CSVManager();
 
-		// TODO: convert raw data to entities
-		List<String[]> dataFromCSVTransactions = csvManager.read(transactionFile);
-		List<String[]> dataFromCSVPrices = csvManager.read(priceFile);
+		List<Transaction> transactions = csvManager.read(transactionFile, transactionFactory);
+		List<Prices> prices = csvManager.read(priceFile, pricesFactory);
 		CassandraConnector connector = new CassandraConnector("localhost", 9042);
-		// TODO: save your entities
-		Instrument instrument = new Instrument();
-		instrument.setTransactions(dataFromCSVTransactions);
-		instrument.setPrices(dataFromCSVPrices);
-		connector.checkingDb();
-		try {
-			connector.saveInstrument(instrument);
-		} catch (ParseException e) {
-			logger.error("date conversion error");
-		}
+		connector.initializationDB();
+		connector.saveTransaction(transactions);
+		connector.savePrices(prices);
 	}
 }

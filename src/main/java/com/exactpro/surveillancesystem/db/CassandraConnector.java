@@ -4,66 +4,80 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
-import com.exactpro.surveillancesystem.entities.Instrument;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.exactpro.surveillancesystem.entities.Prices;
 import com.exactpro.surveillancesystem.entities.Transaction;
-import com.exactpro.surveillancesystem.utils.ConvertDateTimeUtils;
-import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.exactpro.surveillancesystem.utils.ConvertDateTimeUtils.*;
 import java.net.InetSocketAddress;
-import java.text.ParseException;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
 
 public class CassandraConnector {
 	private final InetSocketAddress address;
-	private ConvertDateTimeUtils convert = new ConvertDateTimeUtils();
-	private final Logger loggerCassandraConnection = LoggerFactory.getLogger(LoggingHandler.class);
+	private final Logger loggerCassandraConnection = LoggerFactory.getLogger(CassandraConnector.class);
 
 	public CassandraConnector(String host, Integer port) {
 		this.address = new InetSocketAddress(host, port);
 	}
 
-	public void saveTransaction(Transaction transaction) {
+	public void saveTransaction(Collection<Transaction> transactions) {
+			sessionWrapper(session -> {
+			List<ResultSet> results = new ArrayList<>();
+			for (Transaction transaction : transactions) {
+				PreparedStatement preparedStatement = session.prepare("INSERT INTO ayat.transactions (transaction_ID, " +
+						"execution_entity_name, instrument_name,instrument_classification,quantity," +
+						"price,currency,datestamp,net_amount) VALUES (?,?,?,?,?,?,?,?,?);");
 
+				BoundStatement boundStatement = preparedStatement.bind(transaction.getTransaction_ID(),
+						transaction.getExecution_entity_name(),
+						transaction.getInstrument_name(),
+						transaction.getInstrument_classification(),
+						transaction.getQuantity(),
+						transaction.getPrice(),
+						transaction.getCurrency(),
+						transaction.getDatestamp(),
+						transaction.getNet_amount());
+						session.execute(boundStatement);
+				results.add(session.execute(boundStatement));
+			}
+			return results;
+		});
 	}
 
-	public void saveInstrument(Instrument instrument) throws ParseException {
+	public void savePrices(Collection<Prices> prices) {
+		sessionWrapper(session -> {
+			List<ResultSet> results = new ArrayList<>();
+			for (Prices price : prices) {
+				PreparedStatement preparedStatement = session.prepare("INSERT INTO ayat.prices (instrument_name, " +
+						"date, currency, avg_price,net_amount_per_day) VALUES (?,?,?,?,?);");
 
-		CqlSession session = new CqlSessionBuilder().addContactPoint(new InetSocketAddress("localhost", 9042))
+				BoundStatement boundStatement = preparedStatement.bind(price.getInstrument_name(),
+						price.getDate().atZone(ZoneId.systemDefault()).toLocalDate(),
+						price.getCurrency(),
+						price.getAvg_price(),
+						price.getNet_amount_per_day());
+				session.execute(boundStatement);
+				results.add(session.execute(boundStatement));
+			}
+			return results;
+		});
+	}
+
+	private List<ResultSet> sessionWrapper(Function<CqlSession, List<ResultSet>> action) {
+		try (CqlSession session = new CqlSessionBuilder()
+				.addContactPoint(address)
 				.withLocalDatacenter("datacenter1")
-				.build();
-		for (String[] TransactionsToDB: instrument.getTransactions()) {
-			PreparedStatement preparedStatement = session.prepare("INSERT INTO ayat.transactions (transaction_ID, " +
-					"execution_entity_name, instrument_name,instrument_classification,quantity," +
-					"price,currency,datestamp,net_amount) VALUES (?,?,?,?,?,?,?,?,?);");
-
-			BoundStatement boundStatement = preparedStatement.bind(Long.parseLong(TransactionsToDB[0]),
-					TransactionsToDB[1],
-					TransactionsToDB[2],
-					TransactionsToDB[3],
-					Integer.parseInt(TransactionsToDB[4]),
-					toDouble(TransactionsToDB[5]),
-					TransactionsToDB[6],
-					convertDateFormatTransactions(TransactionsToDB[7]),
-					toDouble(TransactionsToDB[8]));
-			session.execute(boundStatement);
+				.build()) {
+			return action.apply(session);
 		}
-		for(String[] PricesToDB : instrument.getPrices()) {
-			PreparedStatement preparedStatement = session.prepare("INSERT INTO ayat.prices (instrument_name, " +
-					"date, currency, avg_price,net_amount_per_day) VALUES (?,?,?,?,?);");
-
-			BoundStatement boundStatement = preparedStatement.bind(PricesToDB[0],
-					convert.convertDateFormatPrices(PricesToDB[1]),
-					PricesToDB[2],
-					toDouble(PricesToDB[3]),
-					toDouble(PricesToDB[4]));
-			session.execute(boundStatement);
-		}
-		session.close();
 	}
 
-	public void checkingDb() {
+	public void initializationDB() {
 		try{
 			CqlSession session = new CqlSessionBuilder().addContactPoint(new InetSocketAddress("localhost", 9042))
 					.withLocalDatacenter("datacenter1")
