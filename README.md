@@ -8,17 +8,20 @@
 Шаг 1. Во-первых, убедитесь, что все ваши системные пакеты обновлены, выполнив следующие aptкоманды в терминале.
 
   1.1)sudo apt update
+  
   1.2)sudo apt upgrade
+  
   1.3)sudo apt install apt-transport-https
 
 Шаг 2. Установка Java.
  
   2.1)Выполните следующую команду, чтобы установить OpenJDK:
   
-  
    sudo apt install openjdk-8-jdk
  
-  2.2)Чтобы проверить, установлен и запущен ли OpenJDK, выполните следующие команды: java -version
+  2.2)Чтобы проверить, установлен и запущен ли OpenJDK, выполните следующие команды:
+  
+   java -version
 
 Шаг 3. Загрузите и установите Apache Cassandra в Ubuntu 20.04.
   
@@ -29,13 +32,18 @@
     3.1.2)sudo sh -c 'echo "deb http://www.apache.org/dist/cassandra/debian 311x main" > /etc/apt/sources.list.d/cassandra.list'
  	
   3.2)После шагов, описанных выше, выполните следующие команды, чтобы установить его:
+    
     3.2.1)sudo apt update
+    
     3.2.2)sudo apt install cassandra
     
   3.3)Служба Apache Cassandra автоматически запустится после завершения процесса установки. Чтобы проверить, правильно ли установлена ​​Cassandra, выполните следующие команды:
+    
     nodetool status
 
-  3.4)Для взаимодействия с Cassandra через CQL (язык запросов Cassandra) вы можете использовать утилиту командной строки с именем cqlsh: cqlsh
+  3.4)Для взаимодействия с Cassandra через CQL (язык запросов Cassandra) вы можете использовать утилиту командной строки с именем cqlsh: 
+  
+  cqlsh
   
   4)Если возникнут проблемы с установкой пути к файлу.
    В Inellij IDEA, найдите (нажмите) Run/Debug Configurations и укажите путь к файлу в Program     arguments.
