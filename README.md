@@ -1,6 +1,9 @@
 Чтобы успешно запустить программу нужно установить: 
+
 1 openjdk-8-jdk 
+
 2 Cassandra 3.11.10
+
 3 InelliJ IDEA
 
 Если вы пользователь Linux Ubuntu 20.04 то дальше будет показано как это все можно установить 
@@ -45,11 +48,11 @@
   
     cqlsh
  
- Чтобы запустить программу найдите Parse.jar, он находится в .../Exactpro/out/artifacts/Parser_jar
+ Чтобы запустить программу найдите Parse.jar, он находится в .../Parsing_RakhimzhanovAyat/out/artifacts/Parser_jar
  
  4)Путь до файла с транзакциями и ценами при запуске нужно указывать абсолютный
  
- 4.1)Откройте терминал, с помощью команды cd укажите путь к Parse.jar. К примеру: cd Exactpro/out/artifacts/Parser_jar
+ 4.1)Откройте терминал, с помощью команды cd укажите путь к Parse.jar. К примеру: cd Parsing_RakhimzhanovAyat/out/artifacts/Parser_jar
  
  4.2)Затем находясь в папке Parser_jar, в терминале введите следующую команду для запуска программы:
  
