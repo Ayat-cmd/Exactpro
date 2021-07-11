@@ -46,12 +46,14 @@
     cqlsh
  
  Чтобы запустить программу найдите Parse.jar, он находится в .../Exactpro/out/artifacts/Parser_jar
+ 
  4)Путь до файла с транзакциями и ценами при запуске нужно указывать абсолютный
  
  4.1)Откройте терминал, с помощью команды cd укажите путь к Parse.jar. К примеру: cd Exactpro/out/artifacts/Parser_jar
  
  4.2)Затем находясь в папке Parser_jar, в терминале введите следующую команду для запуска программы:
-     java -jar Parser.jar [Путь к файлу transactions_current_datetime.csv] [Путь к файлу price_file_datestamp.csv] 
+ 
+    java -jar Parser.jar [Путь к файлу transactions_current_datetime.csv] [Путь к файлу price_file_datestamp.csv] 
      
  5)При запуске происходит чтение csv файлов и запись в БД
  
