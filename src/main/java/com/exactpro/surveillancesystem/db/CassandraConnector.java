@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 public class CassandraConnector {
 	private final InetSocketAddress address;
-	private final Logger loggerCassandraConnection = LoggerFactory.getLogger(CassandraConnector.class);
+	private final static Logger loggerCassandraConnection = LoggerFactory.getLogger(CassandraConnector.class);
 
 	public CassandraConnector(String host, Integer port) {
 		this.address = new InetSocketAddress(host, port);
@@ -33,15 +33,15 @@ public class CassandraConnector {
 						"execution_entity_name, instrument_name,instrument_classification,quantity," +
 						"price,currency,datestamp,net_amount) VALUES (?,?,?,?,?,?,?,?,?);");
 
-				BoundStatement boundStatement = preparedStatement.bind(transaction.getTransaction_ID(),
-						transaction.getExecution_entity_name(),
-						transaction.getInstrument_name(),
-						transaction.getInstrument_classification(),
+				BoundStatement boundStatement = preparedStatement.bind(transaction.getTransactionID(),
+						transaction.getExecutionEntityName(),
+						transaction.getInstrumentName(),
+						transaction.getInstrumentClassification(),
 						transaction.getQuantity(),
 						transaction.getPrice(),
 						transaction.getCurrency(),
 						transaction.getDatestamp(),
-						transaction.getNet_amount());
+						transaction.getNetAmount());
 						session.execute(boundStatement);
 				results.add(session.execute(boundStatement));
 			}
@@ -56,11 +56,11 @@ public class CassandraConnector {
 				PreparedStatement preparedStatement = session.prepare("INSERT INTO ayat.prices (instrument_name, " +
 						"date, currency, avg_price,net_amount_per_day) VALUES (?,?,?,?,?);");
 
-				BoundStatement boundStatement = preparedStatement.bind(price.getInstrument_name(),
+				BoundStatement boundStatement = preparedStatement.bind(price.getInstrumentName(),
 						price.getDate().atZone(ZoneId.systemDefault()).toLocalDate(),
 						price.getCurrency(),
-						price.getAvg_price(),
-						price.getNet_amount_per_day());
+						price.getAvgPrice(),
+						price.getNetAmountPerDay());
 				session.execute(boundStatement);
 				results.add(session.execute(boundStatement));
 			}
@@ -79,7 +79,7 @@ public class CassandraConnector {
 
 	public void initializationDB() {
 		try{
-			CqlSession session = new CqlSessionBuilder().addContactPoint(new InetSocketAddress("localhost", 9042))
+			CqlSession session = new CqlSessionBuilder().addContactPoint(address)
 					.withLocalDatacenter("datacenter1")
 					.build();
 			session.execute("CREATE KEYSPACE IF NOT EXISTS ayat WITH REPLICATION = {" +

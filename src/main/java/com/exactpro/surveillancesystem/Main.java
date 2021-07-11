@@ -7,8 +7,6 @@ import com.exactpro.surveillancesystem.entities.Transaction;
 import com.exactpro.surveillancesystem.factories.PricesFactory;
 import com.exactpro.surveillancesystem.factories.TransactionFactory;
 import com.opencsv.exceptions.CsvException;
-import org.slf4j.Logger;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +14,6 @@ import java.text.ParseException;
 import java.util.List;
 
 public class Main {
-	private static Logger logger = getLogger(Main.class);
 
 	public static void main(String[] args) throws IOException, CsvException, ParseException {
 		ArgumentsReader argumentsReader = new ArgumentsReader(args);
@@ -24,8 +21,8 @@ public class Main {
 		TransactionFactory transactionFactory = new TransactionFactory();
 		PricesFactory pricesFactory = new PricesFactory();
 
-		File transactionFile = argumentsReader.getTransactionsData();
-		File priceFile = argumentsReader.getPriceData();
+		File transactionFile = argumentsReader.getTransactionsFile();
+		File priceFile = argumentsReader.getPricesFile();
 
 		List<Transaction> transactions = csvManager.read(transactionFile, transactionFactory);
 		List<Prices> prices = csvManager.read(priceFile, pricesFactory);

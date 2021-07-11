@@ -3,47 +3,44 @@ package com.exactpro.surveillancesystem.entities;
 import java.time.Instant;
 
 public class Transaction {
-    private long transaction_ID;
-    private String execution_entity_name;
-    private String instrument_name;
-    private String instrument_classification;
+    private long transactionID;
+    private String executionEntityName;
+    private String instrumentName;
+    private String instrumentClassification;
     private int quantity;
     private double price;
     private String currency;
     private Instant datestamp;
-    private double net_amount;
+    private double netAmount;
 
-    public long getTransaction_ID() {
-        return transaction_ID;
+    public long getTransactionID() {
+        return transactionID;
     }
 
-    public void setTransaction_ID(long transaction_ID) {
-        this.transaction_ID = transaction_ID;
+    public void setTransactionID(long transactionID) {
+        this.transactionID = transactionID;
     }
 
-    public String getExecution_entity_name() {
-        return execution_entity_name;
+    public String getExecutionEntityName() {
+        return executionEntityName;
     }
 
-    public void setExecution_entity_name(String execution_entity_name) {
-        this.execution_entity_name = execution_entity_name;
+    public void setExecutionEntityName(String executionEntityName) {
+        this.executionEntityName = executionEntityName;
     }
 
-    public String getInstrument_name() {
-        return instrument_name;
+    public String getInstrumentName() { return instrumentName; }
+
+    public void setInstrumentName(String instrumentName) {
+        this.instrumentName = instrumentName;
     }
 
-    public void setInstrument_name(String instrument_name) {
-        this.instrument_name = instrument_name;
+    public String getInstrumentClassification() {
+        return instrumentClassification;
     }
 
-    public String getInstrument_classification() {
-        return instrument_classification;
-    }
-
-    public void setInstrument_classification(String instrument_classification) {
-        this.instrument_classification = instrument_classification;
-    }
+    public void setInstrumentClassification(String instrumentClassification) {
+        this.instrumentClassification = instrumentClassification; }
 
     public int getQuantity() {
         return quantity;
@@ -77,11 +74,11 @@ public class Transaction {
         this.datestamp = datestamp;
     }
 
-    public double getNet_amount() {
-        return net_amount;
+    public double getNetAmount() {
+        return netAmount;
     }
 
-    public void setNet_amount(double net_amount) {
-        this.net_amount = net_amount;
+    public void setNetAmount(double netAmount) {
+        this.netAmount = netAmount;
     }
 }
