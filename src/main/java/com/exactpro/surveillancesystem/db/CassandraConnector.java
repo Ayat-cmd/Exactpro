@@ -20,9 +20,14 @@ import java.util.function.Function;
 public class CassandraConnector {
 	private final InetSocketAddress address;
 	private final static Logger loggerCassandraConnection = LoggerFactory.getLogger(CassandraConnector.class);
+	private CqlSession session;
 
 	public CassandraConnector(String host, Integer port) {
+
 		this.address = new InetSocketAddress(host, port);
+		this.session = new CqlSessionBuilder().addContactPoint(this.address)
+				.withLocalDatacenter("datacenter1")
+				.build();
 	}
 
 	public void saveTransaction(Collection<Transaction> transactions) {
@@ -61,7 +66,6 @@ public class CassandraConnector {
 						price.getCurrency(),
 						price.getAvgPrice(),
 						price.getNetAmountPerDay());
-				session.execute(boundStatement);
 				results.add(session.execute(boundStatement));
 			}
 			return results;
@@ -69,23 +73,15 @@ public class CassandraConnector {
 	}
 
 	private List<ResultSet> sessionWrapper(Function<CqlSession, List<ResultSet>> action) {
-		try (CqlSession session = new CqlSessionBuilder()
-				.addContactPoint(address)
-				.withLocalDatacenter("datacenter1")
-				.build()) {
 			return action.apply(session);
-		}
 	}
 
 	public void initializationDB() {
 		try{
-			CqlSession session = new CqlSessionBuilder().addContactPoint(address)
-					.withLocalDatacenter("datacenter1")
-					.build();
 			session.execute("CREATE KEYSPACE IF NOT EXISTS ayat WITH REPLICATION = {" +
 					"'class' : 'SimpleStrategy', 'replication_factor' : 1 }; ");
 			session.execute("CREATE TABLE IF NOT EXISTS ayat.transactions (" +
-					"transaction_ID bigint PRIMARY KEY ," +
+					"transaction_ID bigint," +
 					"execution_entity_name text," +
 					"instrument_name text," +
 					"instrument_classification text, " +
@@ -93,16 +89,26 @@ public class CassandraConnector {
 					"price double," +
 					"currency text," +
 					"datestamp timestamp," +
-					"net_amount double);");
+					"net_amount double," +
+					"PRIMARY KEY ((execution_entity_name,instrument_name), transaction_ID));");
 			session.execute("CREATE TABLE IF NOT EXISTS ayat.prices (" +
-					"instrument_name text PRIMARY KEY," +
+					"instrument_name text," +
 					"date date," +
 					"currency text," +
 					"avg_price double," +
-					"net_amount_per_day double);");
-			session.close();
+					"net_amount_per_day double," +
+					"PRIMARY KEY ((date, currency),instrument_name));");
+			session.execute("CREATE TABLE IF NOT EXISTS ayat.alerts (" +
+					"alert_ID text PRIMARY KEY," +
+					"alert_type text," +
+					"Description text," +
+					"affected_transactions_count int);");
 		}catch (Exception e){
 			loggerCassandraConnection.error ("An error occurred when creating the database", e);
 		}
+	}
+
+	public void closeSession(){
+		session.close();
 	}
 }

@@ -9,7 +9,7 @@ public class Transaction {
     private String instrumentClassification;
     private int quantity;
     private double price;
-    private String currency;
+    private  String currency;
     private Instant datestamp;
     private double netAmount;
 
@@ -58,7 +58,7 @@ public class Transaction {
         this.price = price;
     }
 
-    public String getCurrency() {
+    public  String getCurrency() {
         return currency;
     }
 
@@ -81,4 +81,6 @@ public class Transaction {
     public void setNetAmount(double netAmount) {
         this.netAmount = netAmount;
     }
+
+
 }
