@@ -1,22 +1,18 @@
 package com.exactpro.surveillancesystem.factories;
 
-import com.exactpro.surveillancesystem.entities.Prices;
-import static com.exactpro.surveillancesystem.utils.ConvertDateTimeUtils.convertDateFormat;
+import com.exactpro.surveillancesystem.entities.Price;
+import static com.exactpro.surveillancesystem.utils.DateTimeUtils.convertDateFormat;
 
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-public class PricesFactory implements EntityFactory<Prices>{
+public class PricesFactory implements EntityFactory<Price>{
     @Override
-    public List<Prices> createEntities(List<String[]> rawData) throws ParseException {
-        List<Prices> resultPrices = new ArrayList<>(rawData.size());
+    public List<Price> createEntities(List<String[]> rawData) throws ParseException {
+        List<Price> resultPrices = new ArrayList<>(rawData.size());
         for (String[] data : rawData) {
-            Prices prices = new Prices();
+            Price prices = new Price();
             prices.setInstrumentName(data[0]);
             prices.setDate(convertDateFormat(data[1]));
             prices.setCurrency(data[2]);

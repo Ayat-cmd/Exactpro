@@ -1,13 +1,11 @@
 package com.exactpro.surveillancesystem.csv;
 
+import com.exactpro.surveillancesystem.entities.AlertICA;
 import com.exactpro.surveillancesystem.factories.EntityFactory;
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvException;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.util.List;
 
@@ -26,13 +24,13 @@ public class CSVManager {
 	}
 
 
-	public void write(List<String[]> data, File file) throws IOException {
-		try (ICSVWriter writer = new CSVWriterBuilder(new FileWriter(file))
-				.withSeparator(separator)
-				.withQuoteChar(quote)
-				.build()) {
-			writer.writeAll(data);
+	public void write(List<AlertICA> data, File file) throws IOException {
+		PrintWriter pw = new PrintWriter(file);
+		pw.println("alert_ID, alert_type, Description, affected_transactions_count");
+		for (AlertICA alertICA: data) {
+			pw.println(alertICA.getAlertID()+separator+alertICA.getAlertType()+separator+alertICA.getDescription()+separator+alertICA.getAffectedTransactionsCount());
 		}
+		pw.close();
 	}
 
 	public <T> List<T> read(File file, EntityFactory<T> entityFactory) throws IOException, CsvException, ParseException {

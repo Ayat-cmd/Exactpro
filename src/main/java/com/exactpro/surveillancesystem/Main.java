@@ -1,23 +1,25 @@
 package com.exactpro.surveillancesystem;
 
-import com.exactpro.surveillancesystem.alerts.IncorrectCurrencyAlert;
+import com.exactpro.surveillancesystem.analyze.AnalyzeICA;
 import com.exactpro.surveillancesystem.csv.CSVManager;
 import com.exactpro.surveillancesystem.db.CassandraConnector;
-import com.exactpro.surveillancesystem.entities.AlertsICA;
-import com.exactpro.surveillancesystem.entities.Prices;
+import com.exactpro.surveillancesystem.entities.AlertICA;
+import com.exactpro.surveillancesystem.entities.Price;
 import com.exactpro.surveillancesystem.entities.Transaction;
 import com.exactpro.surveillancesystem.factories.AlertsFactoryICA;
 import com.exactpro.surveillancesystem.factories.PricesFactory;
 import com.exactpro.surveillancesystem.factories.TransactionFactory;
+import com.exactpro.surveillancesystem.service.AlertService;
+import com.exactpro.surveillancesystem.service.PriceService;
+import com.exactpro.surveillancesystem.service.TransactionService;
 import com.opencsv.exceptions.CsvException;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
+import static com.exactpro.surveillancesystem.utils.IOUtils.createFile;
 
 public class Main {
 
@@ -32,20 +34,19 @@ public class Main {
 		File priceFile = argumentsReader.getPricesFile();
 
 		List<Transaction> transactions = csvManager.read(transactionFile, transactionFactory);
-		List<Prices> prices = csvManager.read(priceFile, pricesFactory);
+		List<Price> prices = csvManager.read(priceFile, pricesFactory);
 
 		CassandraConnector connector = new CassandraConnector("localhost", 9042);
-		connector.initializationDB();
-		connector.saveTransaction(transactions);
-		connector.savePrices(prices);
-		connector.closeSession();
-
-		IncorrectCurrencyAlert incorrectCurrencyAlert = new IncorrectCurrencyAlert("localhost", 9042);
-		List<AlertsICA> alertsICA = incorrectCurrencyAlert.ICA(alertsFactoryICA);
-		incorrectCurrencyAlert.saveAlertsICA(alertsICA);
-		File alertsFile = incorrectCurrencyAlert.createFile();
-		List<String[]> alertsCSV = incorrectCurrencyAlert.copy(alertsICA);
-		csvManager.write(alertsCSV, alertsFile);
-		incorrectCurrencyAlert.close();
+		TransactionService transactionService = new TransactionService(connector);
+		transactionService.saveAll(transactions);
+		PriceService priceService = new PriceService(connector);
+		priceService.saveAll(prices);
+		AnalyzeICA incorrectCurrencyAlert = new AnalyzeICA(connector);
+		List<AlertICA> alertICA = incorrectCurrencyAlert.ICA(alertsFactoryICA);
+		AlertService alertService = new AlertService(connector);
+		alertService.saveAll(alertICA);
+		File alertsFile = createFile();
+		csvManager.write(alertICA, alertsFile);
+		connector.close();
 	}
 }

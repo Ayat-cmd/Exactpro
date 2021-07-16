@@ -1,14 +1,10 @@
 package com.exactpro.surveillancesystem.factories;
 
 import com.exactpro.surveillancesystem.entities.Transaction;
-import static com.exactpro.surveillancesystem.utils.ConvertDateTimeUtils.convertDateFormat;
+import static com.exactpro.surveillancesystem.utils.DateTimeUtils.convertDateFormat;
 
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class TransactionFactory implements EntityFactory<Transaction>{
