@@ -2,7 +2,6 @@ package com.exactpro.surveillancesystem.factories;
 
 import com.exactpro.surveillancesystem.entities.AlertICA;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,6 @@ public class AlertsFactoryICA{
         return resultAlerts;
     }
 
-    @GetMapping(value = "/get/alerts")
     public List<AlertICA> readAll() {
         return new ArrayList<>(resultAlerts);
     }
