@@ -2,11 +2,11 @@ package com.exactpro.surveillancesystem.service;
 
 import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
-import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.exactpro.surveillancesystem.db.CassandraConnector;
 import com.exactpro.surveillancesystem.entities.AlertICA;
 
 import java.util.Collection;
+
 
 public class AlertService implements Service<AlertICA>{
     private CassandraConnector cassandraConnector;
@@ -25,5 +25,7 @@ public class AlertService implements Service<AlertICA>{
             BoundStatement boundStatement = preparedStatement.bind(alertICA.getAlertID(), alertICA.getAlertType(), alertICA.getDescription(), alertICA.getAffectedTransactionsCount());
             cassandraConnector.execute(boundStatement);
         }
+
     }
+
 }

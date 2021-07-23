@@ -10,7 +10,6 @@ import java.util.Collection;
 public class TransactionService  implements Service<Transaction>{
     private final CassandraConnector cassandraConnector;
 
-
     public TransactionService(CassandraConnector cassandraConnector) {
         this.cassandraConnector = cassandraConnector;
     }

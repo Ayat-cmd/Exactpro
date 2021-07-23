@@ -3,7 +3,6 @@ package com.exactpro.surveillancesystem.analyze;
 import com.datastax.oss.driver.api.core.cql.*;
 import com.exactpro.surveillancesystem.db.CassandraConnector;
 import com.exactpro.surveillancesystem.entities.AlertICA;
-import com.exactpro.surveillancesystem.factories.AlertsFactoryICA;
 import static com.exactpro.surveillancesystem.factories.AlertsFactoryICA.createEntities;
 
 import java.text.ParseException;
@@ -31,7 +30,7 @@ public class AnalyzeICA {
     }
 
 
-    public List<AlertICA> ICA(AlertsFactoryICA alertsFactoryICA) throws ParseException {
+    public List<AlertICA> ICA() throws ParseException {
         String query = "select execution_entity_name, instrument_name, currency from ayat.transactions";
         ResultSet resultSet = cassandraConnector.execute(query);
 

@@ -13,6 +13,8 @@ public class Transaction {
     private Instant datestamp;
     private double netAmount;
 
+
+
     public long getTransactionID() {
         return transactionID;
     }

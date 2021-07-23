@@ -1,14 +1,11 @@
 package com.exactpro.surveillancesystem;
 
-import com.exactpro.surveillancesystem.API.ControllerAPI;
 import com.exactpro.surveillancesystem.analyze.AnalyzeICA;
 import com.exactpro.surveillancesystem.csv.CSVManager;
-import com.exactpro.surveillancesystem.dao.AlertsDAO;
 import com.exactpro.surveillancesystem.db.CassandraConnector;
 import com.exactpro.surveillancesystem.entities.AlertICA;
 import com.exactpro.surveillancesystem.entities.Price;
 import com.exactpro.surveillancesystem.entities.Transaction;
-import com.exactpro.surveillancesystem.factories.AlertsFactoryICA;
 import com.exactpro.surveillancesystem.factories.PricesFactory;
 import com.exactpro.surveillancesystem.factories.TransactionFactory;
 import com.exactpro.surveillancesystem.service.AlertService;
@@ -33,7 +30,6 @@ public class Main {
 		CSVManager csvManager = new CSVManager();
 		TransactionFactory transactionFactory = new TransactionFactory();
 		PricesFactory pricesFactory = new PricesFactory();
-		AlertsFactoryICA alertsFactoryICA = new AlertsFactoryICA();
 
 		File transactionFile = argumentsReader.getTransactionsFile();
 		File priceFile = argumentsReader.getPricesFile();
@@ -46,18 +42,13 @@ public class Main {
 		PriceService priceService = new PriceService(connector);
 		priceService.saveAll(prices);
 		AnalyzeICA incorrectCurrencyAlert = new AnalyzeICA(connector);
-		List<AlertICA> alertICA = incorrectCurrencyAlert.ICA(alertsFactoryICA);
-//		System.out.println(controllerAPI.get(alertsAPI));
+		List<AlertICA> alertICA = incorrectCurrencyAlert.ICA();
 		AlertService alertService = new AlertService(connector);
 		alertService.saveAll(alertICA);
 		File alertsFile = createFile();
 		csvManager.write(alertICA, alertsFile);
 
 		SpringApplication.run(Main.class, args);
-		AlertsDAO alertsDAO = new AlertsDAO(alertICA);
-		ControllerAPI controllerAPI = new ControllerAPI(alertICA, alertsDAO);
-//		controllerAPI.set();
-
 
 		connector.close();
 	}

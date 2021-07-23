@@ -1,7 +1,7 @@
 package com.exactpro.surveillancesystem.factories;
 
-import com.exactpro.surveillancesystem.entities.Price;
 import static com.exactpro.surveillancesystem.utils.DateTimeUtils.convertDateFormat;
+import com.exactpro.surveillancesystem.entities.Price;
 
 import java.text.ParseException;
 import java.util.ArrayList;

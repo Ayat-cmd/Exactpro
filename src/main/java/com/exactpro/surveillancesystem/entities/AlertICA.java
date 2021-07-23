@@ -1,8 +1,5 @@
 package com.exactpro.surveillancesystem.entities;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class AlertICA {
     private String alertID;
     private String alertType;

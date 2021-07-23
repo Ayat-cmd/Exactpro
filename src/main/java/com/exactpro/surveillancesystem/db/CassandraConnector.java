@@ -5,11 +5,14 @@ import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.String;
 import java.net.InetSocketAddress;
 
 public class CassandraConnector implements AutoCloseable{
-//	private final static Logger logger = LoggerFactory.getLogger(CassandraConnector.class);
+	private final static Logger logger = LoggerFactory.getLogger(CassandraConnector.class);
 	private CqlSession session;
 
 	public CassandraConnector(String host, Integer port) {
@@ -33,6 +36,7 @@ public class CassandraConnector implements AutoCloseable{
 
 	private void initializationDB() {
 		try{
+			session.execute("DROP KEYSPACE IF EXISTS ayat;");
 			session.execute("CREATE KEYSPACE IF NOT EXISTS ayat WITH REPLICATION = {" +
 					"'class' : 'SimpleStrategy', 'replication_factor' : 1 }; ");
 			session.execute("CREATE TABLE IF NOT EXISTS ayat.transactions (" +
@@ -59,7 +63,7 @@ public class CassandraConnector implements AutoCloseable{
 					"Description text," +
 					"affected_transactions_count int);");
 		}catch (Exception e){
-			System.out.println("nffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+			logger.error("not create keyspace Cassandra");
 		}
 	}
 
