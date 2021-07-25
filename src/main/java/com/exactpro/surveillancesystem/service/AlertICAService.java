@@ -8,21 +8,24 @@ import com.exactpro.surveillancesystem.entities.AlertICA;
 import java.util.Collection;
 
 
-public class AlertService implements Service<AlertICA>{
+public class AlertICAService implements Service<AlertICA>{
     private CassandraConnector cassandraConnector;
 
-    public AlertService(CassandraConnector cassandraConnector) {
+    public AlertICAService(CassandraConnector cassandraConnector) {
         this.cassandraConnector = cassandraConnector;
     }
 
     @Override
     public void saveAll(Collection<AlertICA> alertsICA) {
-        String query = "INSERT INTO ayat.alerts (" +
+        String query = "INSERT INTO ayat.alertsICA (" +
                 "alert_ID, alert_type, Description, affected_transactions_count) " +
                 "VALUES (?,?,?,?);";
         for (AlertICA alertICA : alertsICA) {
             PreparedStatement preparedStatement = cassandraConnector.preparedStatement(query);
-            BoundStatement boundStatement = preparedStatement.bind(alertICA.getAlertID(), alertICA.getAlertType(), alertICA.getDescription(), alertICA.getAffectedTransactionsCount());
+            BoundStatement boundStatement = preparedStatement.bind(alertICA.getAlertID(),
+                    alertICA.getAlertType(),
+                    alertICA.getDescription(),
+                    alertICA.getAffectedTransactionsCount());
             cassandraConnector.execute(boundStatement);
         }
 

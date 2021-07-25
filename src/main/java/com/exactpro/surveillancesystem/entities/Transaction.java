@@ -1,6 +1,7 @@
 package com.exactpro.surveillancesystem.entities;
 
 import java.time.Instant;
+import java.util.Objects;
 
 public class Transaction {
     private long transactionID;
@@ -84,5 +85,16 @@ public class Transaction {
         this.netAmount = netAmount;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return transactionID == that.transactionID && quantity == that.quantity && Double.compare(that.price, price) == 0 && Double.compare(that.netAmount, netAmount) == 0 && Objects.equals(executionEntityName, that.executionEntityName) && Objects.equals(instrumentName, that.instrumentName) && Objects.equals(instrumentClassification, that.instrumentClassification) && Objects.equals(currency, that.currency) && Objects.equals(datestamp, that.datestamp);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(transactionID, executionEntityName, instrumentName, instrumentClassification, quantity, price, currency, datestamp, netAmount);
+    }
 }

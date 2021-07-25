@@ -51,7 +51,7 @@ public class AnalyzeICA {
         return alertsICA;
     }
 
-    public void addAlerts() {
+    private void addAlerts() {
         entityNameAlerts.put(idExecutionEntityNameAlerts, executionEntityName);
         instrumentNameAlerts.put(idInstrumentNameAlerts, instrumentName);
         affectedTransactionsCount.add(1);
@@ -59,7 +59,7 @@ public class AnalyzeICA {
         idInstrumentNameAlerts++;
     }
 
-    public void findAlerts() {
+    private void findAlerts() {
         for (int findIdValue : entityNameAlerts.keySet()) {
             if (executionEntityName.equals(entityNameAlerts.get(findIdValue)) && instrumentName.equals(instrumentNameAlerts.get(findIdValue))) {
                 affectedTransactionsCount.set(findIdValue, affectedTransactionsCount.get(findIdValue) + 1);

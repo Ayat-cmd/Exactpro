@@ -39,4 +39,5 @@ public class AlertICA {
     public void setAffectedTransactionsCount(Integer affectedTransactionsCount) {
         this.affectedTransactionsCount = affectedTransactionsCount;
     }
+
 }

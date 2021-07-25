@@ -1,4 +1,0 @@
-alert_ID, alert_type, Description, affected_transactions_count
-ICA230720210,ICA,Currency field is incorrect for the combination of MAKLW64954 and LL0345934354,2
-ICA230720211,ICA,Currency field is incorrect for the combination of AAWDW14954 and MM0345934353,1
-ICA230720212,ICA,Currency field is incorrect for the combination of AAWDW14954 and MM0345934354,1

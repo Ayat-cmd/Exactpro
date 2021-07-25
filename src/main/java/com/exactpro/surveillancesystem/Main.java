@@ -1,14 +1,17 @@
 package com.exactpro.surveillancesystem;
 
 import com.exactpro.surveillancesystem.analyze.AnalyzeICA;
+import com.exactpro.surveillancesystem.analyze.AnalyzePPA;
 import com.exactpro.surveillancesystem.csv.CSVManager;
 import com.exactpro.surveillancesystem.db.CassandraConnector;
 import com.exactpro.surveillancesystem.entities.AlertICA;
+import com.exactpro.surveillancesystem.entities.AlertPPA;
 import com.exactpro.surveillancesystem.entities.Price;
 import com.exactpro.surveillancesystem.entities.Transaction;
 import com.exactpro.surveillancesystem.factories.PricesFactory;
 import com.exactpro.surveillancesystem.factories.TransactionFactory;
-import com.exactpro.surveillancesystem.service.AlertService;
+import com.exactpro.surveillancesystem.service.AlertICAService;
+import com.exactpro.surveillancesystem.service.AlertPPAService;
 import com.exactpro.surveillancesystem.service.PriceService;
 import com.exactpro.surveillancesystem.service.TransactionService;
 import com.opencsv.exceptions.CsvException;
@@ -43,10 +46,17 @@ public class Main {
 		priceService.saveAll(prices);
 		AnalyzeICA incorrectCurrencyAlert = new AnalyzeICA(connector);
 		List<AlertICA> alertICA = incorrectCurrencyAlert.ICA();
-		AlertService alertService = new AlertService(connector);
+		AlertICAService alertService = new AlertICAService(connector);
 		alertService.saveAll(alertICA);
-		File alertsFile = createFile();
-		csvManager.write(alertICA, alertsFile);
+		File alertsICAFile = createFile("ICA");
+		csvManager.writeICA(alertICA, alertsICAFile);
+
+		AnalyzePPA ppa = new AnalyzePPA(connector);
+		List<AlertPPA> alertPPA = ppa.PPA();
+		AlertPPAService alertPPAService = new AlertPPAService(connector);
+		alertPPAService.saveAll(alertPPA);
+		File alertsPPAFile = createFile("PPA");
+		csvManager.writePPA(alertPPA, alertsPPAFile);
 
 		SpringApplication.run(Main.class, args);
 

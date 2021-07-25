@@ -1,15 +1,17 @@
 package com.exactpro.surveillancesystem.csv;
 
 import com.exactpro.surveillancesystem.entities.AlertICA;
+import com.exactpro.surveillancesystem.entities.AlertPPA;
 import com.exactpro.surveillancesystem.factories.EntityFactory;
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvException;
 
 import java.io.*;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.List;
 
-public class CSVManager {
+public class CSVManager{
 	private final Character separator;
 	private final Character quote;
 
@@ -23,12 +25,20 @@ public class CSVManager {
 		this.quote = quote;
 	}
 
-
-	public void write(List<AlertICA> data, File file) throws IOException {
+	public void writeICA(List<AlertICA> data, File file) throws IOException {
 		PrintWriter pw = new PrintWriter(file);
-		pw.println("alert_ID, alert_type, Description, affected_transactions_count");
-		for (AlertICA alertICA: data) {
-			pw.println(alertICA.getAlertID()+separator+alertICA.getAlertType()+separator+alertICA.getDescription()+separator+alertICA.getAffectedTransactionsCount());
+		pw.println("Alert ID, Alert type, Description, Affected transactions count");
+		for (AlertICA alertPPA: data) {
+			pw.println(alertPPA.getAlertID()+","+alertPPA.getAlertType()+","+alertPPA.getDescription()+","+alertPPA.getAffectedTransactionsCount());
+		}
+		pw.close();
+	}
+
+	public void writePPA(List<AlertPPA> data, File file) throws IOException {
+		PrintWriter pw = new PrintWriter(file);
+		pw.println("Alert ID, Alert type, Description, Affected transactions count");
+		for (AlertPPA alertPPA: data) {
+			pw.println(alertPPA.getAlertId()+","+alertPPA.getAlertType()+","+alertPPA.getDescription()+","+alertPPA.getAffectedTransactionsCount());
 		}
 		pw.close();
 	}
@@ -49,4 +59,5 @@ public class CSVManager {
 			return csvReader.readAll();
 		}
 	}
+
 }
