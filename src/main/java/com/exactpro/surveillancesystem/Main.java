@@ -44,6 +44,7 @@ public class Main {
 		transactionService.saveAll(transactions);
 		PriceService priceService = new PriceService(connector);
 		priceService.saveAll(prices);
+
 		AnalyzeICA incorrectCurrencyAlert = new AnalyzeICA(connector);
 		List<AlertICA> alertICA = incorrectCurrencyAlert.ICA();
 		AlertICAService alertService = new AlertICAService(connector);

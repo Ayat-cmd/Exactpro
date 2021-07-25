@@ -1,16 +1,21 @@
 package com.exactpro.surveillancesystem.factories;
 
 import com.exactpro.surveillancesystem.entities.Transaction;
+import org.springframework.stereotype.Service;
+
 import static com.exactpro.surveillancesystem.utils.DateTimeUtils.convertDateFormat;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class TransactionFactory implements EntityFactory<Transaction>{
+    private static List<Transaction> resultTransaction;
+
     @Override
     public List<Transaction> createEntities(List<String[]> rawData) throws ParseException {
-        List<Transaction> resultTransaction = new ArrayList<>(rawData.size());
+        resultTransaction = new ArrayList<>(rawData.size());
         for (String[] data : rawData) {
             Transaction transaction = new Transaction();
             transaction.setTransactionID(Long.parseLong(data[0]));
@@ -25,5 +30,9 @@ public class TransactionFactory implements EntityFactory<Transaction>{
             resultTransaction.add(transaction);
         }
         return resultTransaction;
+    }
+
+    public List<Transaction> getAlertsTransactions() {
+        return new ArrayList<>(resultTransaction);
     }
 }
