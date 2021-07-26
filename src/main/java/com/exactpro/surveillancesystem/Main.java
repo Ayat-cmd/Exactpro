@@ -4,14 +4,12 @@ import com.exactpro.surveillancesystem.analyze.AnalyzeICA;
 import com.exactpro.surveillancesystem.analyze.AnalyzePPA;
 import com.exactpro.surveillancesystem.csv.CSVManager;
 import com.exactpro.surveillancesystem.db.CassandraConnector;
-import com.exactpro.surveillancesystem.entities.AlertICA;
-import com.exactpro.surveillancesystem.entities.AlertPPA;
+import com.exactpro.surveillancesystem.entities.Alert;
 import com.exactpro.surveillancesystem.entities.Price;
 import com.exactpro.surveillancesystem.entities.Transaction;
 import com.exactpro.surveillancesystem.factories.PricesFactory;
 import com.exactpro.surveillancesystem.factories.TransactionFactory;
-import com.exactpro.surveillancesystem.service.AlertICAService;
-import com.exactpro.surveillancesystem.service.AlertPPAService;
+import com.exactpro.surveillancesystem.service.AlertICAandPPAService;
 import com.exactpro.surveillancesystem.service.PriceService;
 import com.exactpro.surveillancesystem.service.TransactionService;
 import com.opencsv.exceptions.CsvException;
@@ -46,18 +44,19 @@ public class Main {
 		priceService.saveAll(prices);
 
 		AnalyzeICA incorrectCurrencyAlert = new AnalyzeICA(connector);
-		List<AlertICA> alertICA = incorrectCurrencyAlert.ICA();
-		AlertICAService alertService = new AlertICAService(connector);
+		List<Alert> alertICA = incorrectCurrencyAlert.ICA();
+		AlertICAandPPAService alertService = new AlertICAandPPAService(connector);
 		alertService.saveAll(alertICA);
-		File alertsICAFile = createFile("ICA");
-		csvManager.writeICA(alertICA, alertsICAFile);
+		File alertsFile = createFile();
+
+//		for(Alert alert : alertICA) { ???
+//			System.out.println(alert.getAlertType());
+//		}
 
 		AnalyzePPA ppa = new AnalyzePPA(connector);
-		List<AlertPPA> alertPPA = ppa.PPA();
-		AlertPPAService alertPPAService = new AlertPPAService(connector);
-		alertPPAService.saveAll(alertPPA);
-		File alertsPPAFile = createFile("PPA");
-		csvManager.writePPA(alertPPA, alertsPPAFile);
+		List<Alert> alertPPA = ppa.PPA();
+		alertService.saveAll(alertPPA);
+		csvManager.write(alertICA, alertsFile);
 
 		SpringApplication.run(Main.class, args);
 

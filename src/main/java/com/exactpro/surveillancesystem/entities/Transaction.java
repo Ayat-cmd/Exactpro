@@ -4,6 +4,16 @@ import java.time.Instant;
 import java.util.Objects;
 
 public class Transaction {
+    private String alertId;
+
+    public String getAlertId() {
+        return alertId;
+    }
+
+    public void setAlertId(String alertId) {
+        this.alertId = alertId;
+    }
+
     private long transactionID;
     private String executionEntityName;
     private String instrumentName;

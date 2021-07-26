@@ -9,8 +9,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class IOUtils {
     private static Logger logger = getLogger(IOUtils.class);
-    public static File createFile(String strfile) throws IOException {
-        File file = new File("alerts"+strfile+"_"+nowDate()+".csv");
+    public static File createFile() throws IOException {
+        File file = new File("alerts_"+nowDate()+".csv");
 
         if (file.createNewFile()){
             logger.info("File is created!");

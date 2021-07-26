@@ -3,13 +3,13 @@ package com.exactpro.surveillancesystem.analyze;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
 import com.exactpro.surveillancesystem.db.CassandraConnector;
-import com.exactpro.surveillancesystem.entities.AlertPPA;
+import com.exactpro.surveillancesystem.entities.Alert;
 import com.exactpro.surveillancesystem.entities.Price;
 import com.exactpro.surveillancesystem.entities.Transaction;
+import com.exactpro.surveillancesystem.factories.AlertsFactory;
 
+import java.text.ParseException;
 import java.util.*;
-
-import static com.exactpro.surveillancesystem.utils.DateTimeUtils.nowDate;
 
 public class AnalyzePPA {
     private CassandraConnector connector;
@@ -26,7 +26,7 @@ public class AnalyzePPA {
         this.average = new ArrayList<>();
     }
 
-    public List<AlertPPA> PPA() {
+    public List<Alert> PPA() throws ParseException {
         String queryTransactions = "SELECT execution_entity_name, instrument_name, currency, price FROM ayat.transactions;";
         String queryPrices = "SELECT instrument_name, currency, avg_price FROM ayat.prices";
         ResultSet resultSetTransactions = connector.execute(queryTransactions);
@@ -67,29 +67,7 @@ public class AnalyzePPA {
                 addPricesToCollection(prices, price);
             }
         }
-
-        id = 1;
-        int i = 0;
-        List<AlertPPA> alertPPAS = new ArrayList<>();
-        for (Price findPrice : prices) {
-            AlertPPA alertPPA = new AlertPPA();
-            for (Transaction transaction : transactions) {
-                if (transaction.getCurrency().equals(findPrice.getCurrency()) && transaction.getInstrumentName().equals(findPrice.getInstrumentName())) {
-                    alertPPA.setDescriptionCurrentPercent(((transaction.getPrice() - findPrice.getAvgPrice()) / findPrice.getAvgPrice()) * 100);
-                    if (alertPPA.getDescriptionCurrentPercent() > 50) {
-                        alertPPA.setAlertId("PPA" + nowDate() + id);
-                        alertPPA.setAlertType("PPA");
-                        alertPPA.setDescriptionExecutionEntityName(transaction.getExecutionEntityName());
-                        alertPPA.setDescriptionInstrumentName(transaction.getInstrumentName());
-                        alertPPA.setDescriptionCurrency(transaction.getCurrency());
-                        alertPPA.setAffectedTransactionsCount(countTransactionsPrice.get(i));
-                        alertPPAS.add(alertPPA);
-                        i++;
-                    }
-                }
-            }
-        }
-        return alertPPAS;
+        return new AlertsFactory().createEntitiesPPA(prices, transactions, countTransactionsPrice);
     }
 
     private List<Price> addPricesToCollection(List<Price> prices, Price price) {

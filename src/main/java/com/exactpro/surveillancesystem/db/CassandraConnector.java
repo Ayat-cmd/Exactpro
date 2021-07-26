@@ -57,12 +57,7 @@ public class CassandraConnector implements AutoCloseable{
 					"avg_price double," +
 					"net_amount_per_day double," +
 					"PRIMARY KEY ((date, currency),instrument_name));");
-			session.execute("CREATE TABLE IF NOT EXISTS ayat.alertsICA (" +
-					"alert_ID text PRIMARY KEY," +
-					"alert_type text," +
-					"Description text," +
-					"affected_transactions_count int);");
-			session.execute("CREATE TABLE IF NOT EXISTS ayat.alertsPPA (" +
+			session.execute("CREATE TABLE IF NOT EXISTS ayat.alerts (" +
 					"alert_ID text PRIMARY KEY," +
 					"alert_type text," +
 					"Description text," +

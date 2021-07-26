@@ -2,20 +2,17 @@ package com.exactpro.surveillancesystem.analyze;
 
 import com.datastax.oss.driver.api.core.cql.*;
 import com.exactpro.surveillancesystem.db.CassandraConnector;
-import com.exactpro.surveillancesystem.entities.AlertICA;
+import com.exactpro.surveillancesystem.entities.Alert;
 import com.exactpro.surveillancesystem.entities.Transaction;
-import com.exactpro.surveillancesystem.factories.EntityFactory;
 import com.exactpro.surveillancesystem.factories.TransactionFactory;
 
-import static com.exactpro.surveillancesystem.factories.AlertsFactoryICA.createEntities;
 
 import java.text.ParseException;
 import java.util.*;
 
+import static com.exactpro.surveillancesystem.factories.AlertsFactory.createEntitiesICA;
+
 public class AnalyzeICA {
-//    private String currencyICA;
-//    private String executionEntityName;
-//    private String instrumentName;
     private boolean latinLetters;
     private ArrayList<Integer> affectedTransactionsCount;
     private int idExecutionEntityNameAlerts;
@@ -24,7 +21,6 @@ public class AnalyzeICA {
     private Map<Integer, String> instrumentNameAlerts;
     private CassandraConnector cassandraConnector;
 
-//    private List<Transaction> transactionAlerts;
     List<String[]> listTransactionAlerts;
 
     public AnalyzeICA(CassandraConnector cassandraConnector) {
@@ -37,11 +33,10 @@ public class AnalyzeICA {
     }
 
 
-    public List<AlertICA> ICA() throws ParseException {
+    public List<Alert> ICA() throws ParseException {
         String query = "select transaction_ID, execution_entity_name,instrument_name,instrument_classification,quantity," +
                 "price,currency,datestamp,net_amount from ayat.transactions";
         ResultSet resultSet = cassandraConnector.execute(query);
-//        transactionAlerts = new ArrayList<>();
         listTransactionAlerts = new ArrayList<>();
         for (Row alerts : resultSet) {
             Transaction transaction = new Transaction();
@@ -54,14 +49,10 @@ public class AnalyzeICA {
             transaction.setCurrency(alerts.getString("currency"));
             transaction.setDatestamp(alerts.getInstant("datestamp"));
             transaction.setNetAmount(alerts.getDouble("net_amount"));
-//            currencyICA = alerts.getString("currency");
-//            executionEntityName = alerts.getString("execution_entity_name");
-//            instrumentName = alerts.getString("instrument_name");
             latinLetters = transaction.getCurrency().matches("[a-zA-Z0-9]+");
             if (transaction.getCurrency().length() != 3 || !latinLetters) {
                 if (!entityNameAlerts.containsValue(transaction.getExecutionEntityName()) || !instrumentNameAlerts.containsValue(transaction.getInstrumentName())) {
                     addAlerts(transaction);
-//                    transactionAlerts.add(transaction);
                     listTransactionAlerts.add(new String[]{
                             String.valueOf(transaction.getTransactionID()),
                             transaction.getExecutionEntityName(),
@@ -79,10 +70,9 @@ public class AnalyzeICA {
             }
         }
         TransactionFactory transactionFactory = new TransactionFactory();
-//        new AlertTransactionFactoryICA(transactionAlerts);
         transactionFactory.createEntities(listTransactionAlerts);
-        List<AlertICA> alertsICA = createEntities(entityNameAlerts, instrumentNameAlerts, affectedTransactionsCount);
-        return alertsICA;
+        List<Alert> alerts = createEntitiesICA(entityNameAlerts, instrumentNameAlerts, affectedTransactionsCount);
+        return alerts;
     }
 
     private void addAlerts(Transaction transaction) {
